@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,7 +18,7 @@ public class UserControllerTest {
         validUser.setName("User Name");
         validUser.setLogin("UserLogin");
         validUser.setEmail("user@mail.ru");
-        validUser.setBirthday("1990-01-01");
+        validUser.setBirthday(LocalDate.of(1990,1,1));
         userController.validate(validUser);
     }
 
@@ -26,7 +28,7 @@ public class UserControllerTest {
         notValidUser.setName("User Name");
         notValidUser.setLogin(null);
         notValidUser.setEmail("user@mail.ru");
-        notValidUser.setBirthday("1990-01-01");
+        notValidUser.setBirthday(LocalDate.of(1990,1,1));
         Exception exception = assertThrows(ValidationException.class, () -> userController.validate(notValidUser));
         assertEquals("Валидация не прошла! Логин пустой или содержит пробел.", exception.getMessage());
         notValidUser.setLogin("");
@@ -43,7 +45,7 @@ public class UserControllerTest {
         notValidUser.setName("User Name");
         notValidUser.setLogin("UserLogin");
         notValidUser.setEmail(null);
-        notValidUser.setBirthday("1990-01-01");
+        notValidUser.setBirthday(LocalDate.of(1990,1,1));
         Exception exception = assertThrows(ValidationException.class, () -> userController.validate(notValidUser));
         assertEquals("Валидация не прошла! Электронная почта пустая или без @.", exception.getMessage());
         notValidUser.setEmail("");
@@ -60,7 +62,7 @@ public class UserControllerTest {
         notValidUser.setName("User Name");
         notValidUser.setLogin("UserLogin");
         notValidUser.setEmail("user@mail.ru");
-        notValidUser.setBirthday("2100-01-01");
+        notValidUser.setBirthday(LocalDate.of(2100,1,1));
         Exception exception = assertThrows(ValidationException.class, () -> userController.validate(notValidUser));
         assertEquals("Валидация не прошла! Дата рождения не может быть в будущем.", exception.getMessage());
     }
@@ -71,7 +73,7 @@ public class UserControllerTest {
         notValidUser.setName(null);
         notValidUser.setLogin("UserLogin");
         notValidUser.setEmail("user@mail.ru");
-        notValidUser.setBirthday("1990-01-01");
+        notValidUser.setBirthday(LocalDate.of(1990,1,1));
         userController.validate(notValidUser);
         assertEquals("UserLogin", notValidUser.getName());
         notValidUser.setName("    ");

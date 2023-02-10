@@ -15,7 +15,7 @@ public class FilmControllerTest {
         Film validFilm = new Film();
         validFilm.setName("Film name");
         validFilm.setDescription("Film description");
-        validFilm.setReleaseDate("2000-01-01");
+        validFilm.setReleaseDate(LocalDate.of(2000,1,1));
         validFilm.setDuration(100);
         filmController.validate(validFilm);
     }
@@ -25,7 +25,7 @@ public class FilmControllerTest {
         Film notValidFilm = new Film();
         notValidFilm.setName(null);
         notValidFilm.setDescription("Film description");
-        notValidFilm.setReleaseDate("2000-01-01");
+        notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () -> filmController.validate(notValidFilm));
         assertEquals("Валидация не прошла! Пустое имя фильма.", exception.getMessage());
@@ -41,7 +41,7 @@ public class FilmControllerTest {
         notValidFilm.setDescription("Film description. Film description. Film description. Film description. " +
                 "Film description. Film description. Film description. Film description. Film description." +
                 " Film description. Film description. Film description. Film description. Film description.");
-        notValidFilm.setReleaseDate("2000-01-01");
+        notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () -> filmController.validate(notValidFilm));
         assertEquals("Валидация не прошла! Описание более 200 символов.", exception.getMessage());
@@ -52,7 +52,7 @@ public class FilmControllerTest {
         Film notValidFilm = new Film();
         notValidFilm.setName("Film name");
         notValidFilm.setDescription("Film description");
-        notValidFilm.setReleaseDate("1895-12-27");
+        notValidFilm.setReleaseDate(LocalDate.of(1895,12,27));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () -> filmController.validate(notValidFilm));
         assertEquals("Валидация не прошла! Слишком ранний релиз.", exception.getMessage());
@@ -63,7 +63,7 @@ public class FilmControllerTest {
         Film notValidFilm = new Film();
         notValidFilm.setName("Film name");
         notValidFilm.setDescription("Film description");
-        notValidFilm.setReleaseDate("2000-01-01");
+        notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(0);
         Exception exception = assertThrows(ValidationException.class, () -> filmController.validate(notValidFilm));
         assertEquals("Валидация не прошла! Продолжительность отрицательная или 0.", exception.getMessage());
