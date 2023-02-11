@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -34,8 +33,7 @@ public class UserController implements  Controller<User>{
         try {
             log.info(LogMessage.ADD_USER.getLogMassage());
             validate(user);
-            user.setId(currentId);
-            currentId++;
+            user.setId(currentId++);
             int id = user.getId();
             users.put(id, user);
             log.info(LogMessage.ADD_USER_DONE.getLogMassage());
@@ -58,8 +56,8 @@ public class UserController implements  Controller<User>{
                 users.put(id, user);
                 log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
             } else {
-                log.warn(LogMessage.USER_NOT_FOUNR.getLogMassage() + id);
-                throw new ValidationException(LogMessage.USER_NOT_FOUNR.getLogMassage() + id);
+                log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+                throw new ValidationException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
             }
         } catch (ValidationException e) {
             String message = e.getMessage();
@@ -71,27 +69,23 @@ public class UserController implements  Controller<User>{
 
     @Override
     public void validate (User user) throws ValidationException {
-        StringBuilder message = new StringBuilder("Валидация не прошла!");
-        boolean isValid = true;
+        StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());
         String email = user.getEmail();
         if (email == null || email.isBlank() || !email.contains("@")) {
-            isValid = false;
-            message.append(" Электронная почта пустая или без @.");
+            message.append(LogMessage.NOT_VALID_EMAIL.getLogMassage());
+            throw new ValidationException(message.toString());
         }
         String login = user.getLogin();
         if (login == null || login.isBlank() || login.contains(" ")) {
-            isValid = false;
-            message.append(" Логин пустой или содержит пробел.");
+            message.append(LogMessage.NOT_VALID_LOGIN.getLogMassage());
+            throw new ValidationException(message.toString());
         }
         String name = user.getName();
         if (name == null || name.isBlank()) {
             user.setName(login);
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            isValid = false;
-            message.append(" Дата рождения не может быть в будущем.");
-        }
-        if (!isValid) {
+            message.append(LogMessage.NOT_VALID_BIRTHDAY.getLogMassage());
             throw new ValidationException(message.toString());
         }
     }

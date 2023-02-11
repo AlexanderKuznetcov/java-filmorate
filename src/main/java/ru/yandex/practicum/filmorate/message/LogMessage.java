@@ -12,9 +12,18 @@ public enum LogMessage {
     UPDATE_FILM_DONE("Фильм обновлен"),
     UPDATE_USER_DONE("Пользователь обновлен"),
     FILM_NOT_FOUND("В списке отсутствует фильм с id = "),
-    USER_NOT_FOUNR("В списке отсутствует пользователь с id = ")
+    USER_NOT_FOUND("В списке отсутствует пользователь с id = "),
+    VALIDATION_FAIL("Валидация не прошла!"),
+    NOT_VALID_EMAIL(" Электронная почта пустая или без @."),
+    NOT_VALID_LOGIN(" Логин пустой или содержит пробел."),
+    NOT_VALID_BIRTHDAY(" Дата рождения не может быть в будущем."),
+    NOT_VALID_FILM_NAME(" Пустое имя фильма."),
+    NOT_VALID_DESCRIPTION(" Описание более 200 символов."),
+    NOT_VALID_RELEASE_DATE(" Слишком ранний релиз."),
+    NOT_VALID_DURATION(" Продолжительность отрицательная или 0.");
 
-    ;
+
+
 
     private String logMassage;
 
@@ -22,7 +31,7 @@ public enum LogMessage {
         this.logMassage = logMassage;
     }
 
-    public String getLogMassage() { // в кейсах не хочет принимать Endpoint.GET_PRIORITIZED_TASKS.getPath()
+    public String getLogMassage() {
         return logMassage;
     }
 }

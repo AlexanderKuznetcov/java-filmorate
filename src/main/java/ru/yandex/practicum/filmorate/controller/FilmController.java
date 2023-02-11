@@ -18,6 +18,8 @@ import java.util.Map;
 public class FilmController implements Controller<Film>{
     private final Map<Integer, Film> films = new HashMap<>();
     private int currentId = 1;
+    private static final int MAX_DESCRIPTION_LENGTH = 200;
+    private static final LocalDate DATE_OF_FIRST_MOVIE = LocalDate.of(1895, 12, 28);
 
     @Override
     @GetMapping
@@ -33,8 +35,7 @@ public class FilmController implements Controller<Film>{
         try {
             log.info(LogMessage.ADD_FILM.getLogMassage());
             validate(film);
-            film.setId(currentId);
-            currentId++;
+            film.setId(currentId++);
             int id = film.getId();
             films.put(id, film);
             log.info(LogMessage.ADD_FILM_DONE.getLogMassage());
@@ -70,30 +71,23 @@ public class FilmController implements Controller<Film>{
 
     @Override
     public void validate (Film film) throws ValidationException{
-        StringBuilder message = new StringBuilder("Валидация не прошла!");
-        boolean isValid = true;
+        StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());
         String name = film.getName();
         if (name == null || name.isBlank()) {
-            isValid = false;
-            message.append(" Пустое имя фильма.");
+            message.append(LogMessage.NOT_VALID_FILM_NAME.getLogMassage());
+            throw new ValidationException(message.toString());
         }
-        if (film.getDescription().length() > 200) {
-            isValid = false;
-            message.append(" Описание более 200 символов.");
+        if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
+            message.append(LogMessage.NOT_VALID_DESCRIPTION.getLogMassage());
+            throw new ValidationException(message.toString());
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            isValid = false;
-            message.append(" Слишком ранний релиз.");
+        if (film.getReleaseDate().isBefore(DATE_OF_FIRST_MOVIE)) {
+            message.append(LogMessage.NOT_VALID_RELEASE_DATE.getLogMassage());
+            throw new ValidationException(message.toString());
         }
         if (film.getDuration() <= 0) {
-            isValid = false;
-            message.append(" Продолжительность отрицательная или 0.");
-        }
-        if (!isValid) {
-            throw new ValidationException(message.toString()); //это исключение содержит сообщение о всех ошибках,
-            // а не только о первой, а флаг isValid сигнализирует, что хотя бы одна ошибка есть
+            message.append(LogMessage.NOT_VALID_DURATION.getLogMassage());
+            throw new ValidationException(message.toString());
         }
     }
-
-
 }
