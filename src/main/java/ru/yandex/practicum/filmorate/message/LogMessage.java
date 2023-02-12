@@ -22,9 +22,6 @@ public enum LogMessage {
     NOT_VALID_RELEASE_DATE(" Слишком ранний релиз."),
     NOT_VALID_DURATION(" Продолжительность отрицательная или 0.");
 
-
-
-
     private String logMassage;
 
     LogMessage (String logMassage) {

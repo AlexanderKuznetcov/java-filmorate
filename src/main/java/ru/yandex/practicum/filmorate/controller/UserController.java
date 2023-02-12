@@ -30,39 +30,27 @@ public class UserController implements  Controller<User>{
     @Override
     @PostMapping
     public User add(@RequestBody User user) {
-        try {
-            log.info(LogMessage.ADD_USER.getLogMassage());
-            validate(user);
-            user.setId(currentId++);
-            int id = user.getId();
-            users.put(id, user);
-            log.info(LogMessage.ADD_USER_DONE.getLogMassage());
-        } catch (ValidationException e) {
-            String message = e.getMessage();
-            log.warn(message);
-            throw new ValidationException(message);
-        }
+        log.info(LogMessage.ADD_USER.getLogMassage());
+        validate(user);
+        user.setId(currentId++);
+        int id = user.getId();
+        users.put(id, user);
+        log.info(LogMessage.ADD_USER_DONE.getLogMassage());
         return user;
     }
 
     @Override
     @PutMapping
     public User update(@RequestBody User user) {
-        try {
-            log.info(LogMessage.UPDATE_USER.getLogMassage());
-            validate(user);
-            int id = user.getId();
-            if (users.containsKey(id)) {
-                users.put(id, user);
-                log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
-            } else {
-                log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-                throw new ValidationException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            }
-        } catch (ValidationException e) {
-            String message = e.getMessage();
-            log.warn(message);
-            throw new ValidationException(message);
+        log.info(LogMessage.UPDATE_USER.getLogMassage());
+        validate(user);
+        int id = user.getId();
+        if (users.containsKey(id)) {
+            users.put(id, user);
+            log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
+        } else {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+            throw new ValidationException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
         }
         return user;
     }
@@ -73,11 +61,13 @@ public class UserController implements  Controller<User>{
         String email = user.getEmail();
         if (email == null || email.isBlank() || !email.contains("@")) {
             message.append(LogMessage.NOT_VALID_EMAIL.getLogMassage());
+            log.warn(message.toString());
             throw new ValidationException(message.toString());
         }
         String login = user.getLogin();
         if (login == null || login.isBlank() || login.contains(" ")) {
             message.append(LogMessage.NOT_VALID_LOGIN.getLogMassage());
+            log.warn(message.toString());
             throw new ValidationException(message.toString());
         }
         String name = user.getName();
@@ -86,6 +76,7 @@ public class UserController implements  Controller<User>{
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
             message.append(LogMessage.NOT_VALID_BIRTHDAY.getLogMassage());
+            log.warn(message.toString());
             throw new ValidationException(message.toString());
         }
     }
