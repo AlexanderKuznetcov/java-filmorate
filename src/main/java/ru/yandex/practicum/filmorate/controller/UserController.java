@@ -1,83 +1,64 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController implements  Controller<User>{
-    private final Map<Integer, User> users= new HashMap<>();
-    private int currentId = 1;
+    private final UserService userService;
+
+    @Autowired
+    public UserController (UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     @GetMapping
     public List<User> get() {
-        log.info(LogMessage.GET_USERS.getLogMassage());
-        List<User> list = new ArrayList<>(users.values());
-        return list;
+        return userService.getUsers();
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable int id) {
+        return userService.getUser(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable int id) {
+        return userService.getUserFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 
     @Override
     @PostMapping
     public User add(@RequestBody User user) {
-        log.info(LogMessage.ADD_USER.getLogMassage());
-        validate(user);
-        user.setId(currentId++);
-        int id = user.getId();
-        users.put(id, user);
-        log.info(LogMessage.ADD_USER_DONE.getLogMassage());
-        return user;
+        return userService.addUser(user);
     }
 
     @Override
     @PutMapping
     public User update(@RequestBody User user) {
-        log.info(LogMessage.UPDATE_USER.getLogMassage());
-        validate(user);
-        int id = user.getId();
-        if (users.containsKey(id)) {
-            users.put(id, user);
-            log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
-        } else {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new ValidationException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
-        return user;
+        return userService.updateUser(user);
     }
 
-    @Override
-    public void validate (User user) throws ValidationException {
-        StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());
-        String email = user.getEmail();
-        if (email == null || email.isBlank() || !email.contains("@")) {
-            message.append(LogMessage.NOT_VALID_EMAIL.getLogMassage());
-            log.warn(message.toString());
-            throw new ValidationException(message.toString());
-        }
-        String login = user.getLogin();
-        if (login == null || login.isBlank() || login.contains(" ")) {
-            message.append(LogMessage.NOT_VALID_LOGIN.getLogMassage());
-            log.warn(message.toString());
-            throw new ValidationException(message.toString());
-        }
-        String name = user.getName();
-        if (name == null || name.isBlank()) {
-            user.setName(login);
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            message.append(LogMessage.NOT_VALID_BIRTHDAY.getLogMassage());
-            log.warn(message.toString());
-            throw new ValidationException(message.toString());
-        }
+    @PutMapping ("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping ("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.deleteFriend(id, friendId);
     }
 }

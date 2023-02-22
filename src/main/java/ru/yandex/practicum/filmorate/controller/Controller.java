@@ -10,5 +10,4 @@ interface Controller<T> {
 
     T update(T t);
 
-    void validate(T t);
 }
