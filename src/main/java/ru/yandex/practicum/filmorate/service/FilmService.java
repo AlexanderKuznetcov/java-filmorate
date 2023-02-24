@@ -13,13 +13,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class FilmService {
     private static final int MAX_DESCRIPTION_LENGTH = 200;
     private static final LocalDate DATE_OF_FIRST_MOVIE = LocalDate.of(1895, 12, 28);
+    private static final Comparator<Film> POPULAR_FILM_COMPARATOR = new Comparator<Film>() {
+        @Override
+        public int compare(Film film1, Film film2) {
+            if (film1.getLikesCount() < film2.getLikesCount()) {
+                return 1;
+            }
+            if (film1.getLikesCount() == film2.getLikesCount()) {
+                return 0;
+            }
+            return -1;
+        }
+    };
     private final InMemoryFilmStorage inMemoryFilmStorage;
 
     @Autowired
@@ -32,12 +45,9 @@ public class FilmService {
         return inMemoryFilmStorage.getFilms();
     }
 
-    public Film getFilm(int id) throws FilmNotFoundException {
+    public Film getFilm(int id) {
+        checkFilmInStorage(id);
         Film film = inMemoryFilmStorage.getFilmFromId(id);
-        if (film == null) {
-            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);
-            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);
-        }
         return film;
     }
 
@@ -51,55 +61,49 @@ public class FilmService {
 
     public void addLike(int filmId, int userId) {
         Film film = inMemoryFilmStorage.getFilmFromId(filmId);
-        if (film == null) {
-            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
-            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
-        }
+        checkFilmInStorage(filmId);
         log.info(LogMessage.ADD_LIKE_DONE.getLogMassage());
         film.addLike(userId);
     }
 
     public void deleteLike(int filmId, int userId) {
         Film film = inMemoryFilmStorage.getFilmFromId(filmId);
-        if (film == null) {
-            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
-            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
-        }
-        if (!film.getLikes().contains(userId)) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
-            throw new FilmNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
-        }
-        log.info(LogMessage.DEL_LIKE_DONE.getLogMassage());
+        checkFilmInStorage(filmId);
+        checkLikeOfUser(filmId, userId);
         film.deleteLike(userId);
+        log.info(LogMessage.DEL_LIKE_DONE.getLogMassage());
     }
 
     public List<Film> getPopular (int count) {
         ArrayList<Film> allFilms =(ArrayList<Film>) inMemoryFilmStorage.getFilms();
-        allFilms.sort(Comparator.comparing(Film::getLikesCountNeg));
-        List<Film> mostPopularFilms = new ArrayList<>();
-        int i = 0;
-        for (Film film : allFilms) {
-            if (i == count) {
-                return mostPopularFilms;
-            }
-            mostPopularFilms.add(film);
-            i++;
-        }
-        return mostPopularFilms;
+        allFilms.sort(POPULAR_FILM_COMPARATOR);
+        Stream<Film> mostPopularFilms = allFilms.stream().limit(count);
+        return mostPopularFilms.collect(Collectors.toList());
     }
 
     public Film updateFilm(Film film) {
         int id = film.getId();
         validateFilm(film);
-        if (inMemoryFilmStorage.getFilmFromId(id) == null) {
-            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);
-            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);
-        }
+        checkFilmInStorage(id);
         Film updateFilm = inMemoryFilmStorage.updateFilm(film);
         log.info(LogMessage.UPDATE_FILM_DONE.getLogMassage());
         return updateFilm;
     }
 
+    private void checkFilmInStorage (int filmId) {
+        if (inMemoryFilmStorage.getFilmFromId(filmId) == null) {
+            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
+            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
+        }
+    }
+
+    private void checkLikeOfUser (int filmId, int userId) {
+        Film film = inMemoryFilmStorage.getFilmFromId(filmId);
+        if (!film.getUsersIdWhoLike().contains(userId)) {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
+            throw new FilmNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
+        }
+    }
 
     public void validateFilm (Film film) throws ValidationException {
         StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());

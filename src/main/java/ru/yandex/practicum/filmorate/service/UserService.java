@@ -28,11 +28,8 @@ public class UserService {
     }
 
     public User getUser(int id) {
+        checkUserInStorage(id);
         User user = inMemoryUserStorage.getUserFromId(id);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
         return user;
     }
 
@@ -45,43 +42,28 @@ public class UserService {
 
     public User updateUser(User user) {
         int id = user.getId();
+        checkUserInStorage(id);
         validateUser(user);
-        if (inMemoryUserStorage.getUserFromId(id) == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
         User updateUser = inMemoryUserStorage.updateUser(user);
         log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
         return updateUser;
     }
 
     public void addFriend(int id, int idFriend) {
+        checkUserInStorage(id);
+        checkUserInStorage(idFriend);
         User user = inMemoryUserStorage.getUserFromId(id);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
         User friend = inMemoryUserStorage.getUserFromId(idFriend);
-        if (friend == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + idFriend);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + idFriend);
-        }
         user.addFriend(idFriend);
         friend.addFriend(id);
         log.info(LogMessage.ADD_FRIEND_DONE.getLogMassage());
     }
 
     public void deleteFriend(int id, int idNotFriend) {
+        checkUserInStorage(id);
+        checkUserInStorage(idNotFriend);
         User user = inMemoryUserStorage.getUserFromId(id);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
         User notFriend = inMemoryUserStorage.getUserFromId(idNotFriend);
-        if (notFriend == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + idNotFriend);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + idNotFriend);
-        }
         user.deleteFriend(idNotFriend);
         notFriend.deleteFriend(id);
         log.info(LogMessage.DEL_FRIEND_DONE.getLogMassage());
@@ -101,16 +83,8 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int id, int otherId) {
-        User user = inMemoryUserStorage.getUserFromId(id);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-        }
-        User otherUser = inMemoryUserStorage.getUserFromId(otherId);
-        if (otherUser == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + otherId);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + otherId);
-        }
+        checkUserInStorage(id);
+        checkUserInStorage(otherId);
         List<User> commonUsers = new ArrayList<>();
         List<User> userFriends = this.getUserFriends(id);
         List<User> otherUserFriends = this.getUserFriends(otherId);
@@ -123,6 +97,14 @@ public class UserService {
             }
         }
         return commonUsers;
+    }
+
+    private void checkUserInStorage (int id) {
+        User user = inMemoryUserStorage.getUserFromId(id);
+        if (user == null) {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+        }
     }
 
     public void validateUser (User user) throws ValidationException {

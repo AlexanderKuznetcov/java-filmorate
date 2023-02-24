@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 @Data
 public class Film {
@@ -15,17 +13,18 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private TreeSet<Integer> likes = new TreeSet<>();
+    @JsonIgnore
+    private Set<Integer> usersIdWhoLike = new TreeSet<>();
 
     public void addLike(int userId) {
-        likes.add(userId);
+        usersIdWhoLike.add(userId);
     }
 
     public void deleteLike(Integer userId) {
-        likes.remove(userId);
+        usersIdWhoLike.remove(userId);
     }
 
-    public int getLikesCountNeg() {
-        return -likes.size();
+    public int getLikesCount() {
+        return usersIdWhoLike.size();
     }
 }
