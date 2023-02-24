@@ -4,7 +4,7 @@ import java.util.List;
 
 interface Controller<T> {
 
-    List<T> get();
+    List<T> getAll();
 
     T add(T t);
 

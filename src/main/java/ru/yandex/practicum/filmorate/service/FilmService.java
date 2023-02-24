@@ -33,7 +33,6 @@ public class FilmService {
     }
 
     public Film getFilm(int id) throws FilmNotFoundException {
-        log.info(LogMessage.GET_FILM.getLogMassage() + id);
         Film film = inMemoryFilmStorage.getFilmFromId(id);
         if (film == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);
@@ -44,7 +43,6 @@ public class FilmService {
 
 
     public Film addFilm(Film film) {
-        log.info(LogMessage.ADD_FILM.getLogMassage());
         validateFilm(film);
         Film addFilm = inMemoryFilmStorage.addFilm(film);
         log.info(LogMessage.ADD_FILM_DONE.getLogMassage() + addFilm.getId());
@@ -52,7 +50,6 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        log.info(LogMessage.ADD_LIKE.getLogMassage() + filmId);
         Film film = inMemoryFilmStorage.getFilmFromId(filmId);
         if (film == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
@@ -63,7 +60,6 @@ public class FilmService {
     }
 
     public void deleteLike(int filmId, int userId) {
-        log.info(LogMessage.DEL_LIKE.getLogMassage() + filmId);
         Film film = inMemoryFilmStorage.getFilmFromId(filmId);
         if (film == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
@@ -78,7 +74,6 @@ public class FilmService {
     }
 
     public List<Film> getPopular (int count) {
-        log.info(LogMessage.GET_POPULAR.getLogMassage() + count);
         ArrayList<Film> allFilms =(ArrayList<Film>) inMemoryFilmStorage.getFilms();
         allFilms.sort(Comparator.comparing(Film::getLikesCountNeg));
         List<Film> mostPopularFilms = new ArrayList<>();
@@ -95,7 +90,6 @@ public class FilmService {
 
     public Film updateFilm(Film film) {
         int id = film.getId();
-        log.info(LogMessage.UPDATE_FILM.getLogMassage() + id);
         validateFilm(film);
         if (inMemoryFilmStorage.getFilmFromId(id) == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + id);

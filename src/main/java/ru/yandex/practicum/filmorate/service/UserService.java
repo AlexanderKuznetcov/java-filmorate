@@ -24,12 +24,10 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        log.info(LogMessage.GET_USERS.getLogMassage());
         return inMemoryUserStorage.getUsers();
     }
 
     public User getUser(int id) {
-        log.info(LogMessage.GET_USER.getLogMassage() + id);
         User user = inMemoryUserStorage.getUserFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
@@ -39,7 +37,6 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        log.info(LogMessage.ADD_USER.getLogMassage());
         validateUser(user);
         User addUser = inMemoryUserStorage.addUser(user);
         log.info(LogMessage.ADD_USER_DONE.getLogMassage() + addUser.getId());
@@ -48,7 +45,6 @@ public class UserService {
 
     public User updateUser(User user) {
         int id = user.getId();
-        log.info(LogMessage.UPDATE_USER.getLogMassage() + id);
         validateUser(user);
         if (inMemoryUserStorage.getUserFromId(id) == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
@@ -60,7 +56,6 @@ public class UserService {
     }
 
     public void addFriend(int id, int idFriend) {
-        log.info(LogMessage.ADD_FRIEND.getLogMassage() + idFriend);
         User user = inMemoryUserStorage.getUserFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
@@ -77,7 +72,6 @@ public class UserService {
     }
 
     public void deleteFriend(int id, int idNotFriend) {
-        log.info(LogMessage.DEL_FRIEND.getLogMassage() + idNotFriend);
         User user = inMemoryUserStorage.getUserFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
@@ -94,7 +88,6 @@ public class UserService {
     }
 
     public List<User> getUserFriends(int id) {
-        log.info(LogMessage.GET_FRIENDS.getLogMassage() + id);
         User user = inMemoryUserStorage.getUserFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
@@ -108,7 +101,6 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int id, int otherId) {
-        log.info(LogMessage.GET_COMMON_FRIENDS.getLogMassage() + id + " и " + otherId);
         User user = inMemoryUserStorage.getUserFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
