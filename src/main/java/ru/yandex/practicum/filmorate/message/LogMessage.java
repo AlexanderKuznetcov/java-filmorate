@@ -33,7 +33,8 @@ public enum LogMessage {
     DEL_FRIEND("Получен запрос на удаление друга с id = "),
     DEL_FRIEND_DONE("Друг удален"),
     GET_FRIENDS("Получен запрос на получение друзей пользователя с id = "),
-    GET_COMMON_FRIENDS("Получен запрос на получение общих друзей пользователей с id ");
+    GET_COMMON_FRIENDS("Получен запрос на получение общих друзей пользователей с id "),
+    UNEXPECTED_ERROR("Произошла непредвиденная ошибка.");
 
     private String logMassage;
 
