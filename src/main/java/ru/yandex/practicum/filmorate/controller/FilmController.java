@@ -63,4 +63,8 @@ public class FilmController implements Controller<Film>{
         log.info(LogMessage.DEL_LIKE.getLogMassage() + id);
         filmService.deleteLike(id, userId);
     }
+
+    public FilmService getFilmService() {
+        return filmService;
+    }
 }

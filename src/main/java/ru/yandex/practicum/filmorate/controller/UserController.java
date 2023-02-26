@@ -70,4 +70,8 @@ public class UserController implements  Controller<User>{
         log.info(LogMessage.DEL_FRIEND.getLogMassage() + friendId);
         userService.deleteFriend(id, friendId);
     }
+
+    public UserService getUserService() {
+        return userService;
+    }
 }

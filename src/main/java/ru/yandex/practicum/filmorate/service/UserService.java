@@ -24,18 +24,18 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return inMemoryUserStorage.get();
     }
 
     public User getUser(int id) {
         checkUserInStorage(id);
-        User user = inMemoryUserStorage.getUserFromId(id);
+        User user = inMemoryUserStorage.getFromId(id);
         return user;
     }
 
     public User addUser(User user) {
         validateUser(user);
-        User addUser = inMemoryUserStorage.addUser(user);
+        User addUser = inMemoryUserStorage.add(user);
         log.info(LogMessage.ADD_USER_DONE.getLogMassage() + addUser.getId());
         return addUser;
     }
@@ -44,7 +44,7 @@ public class UserService {
         int id = user.getId();
         checkUserInStorage(id);
         validateUser(user);
-        User updateUser = inMemoryUserStorage.updateUser(user);
+        User updateUser = inMemoryUserStorage.update(user);
         log.info(LogMessage.UPDATE_USER_DONE.getLogMassage());
         return updateUser;
     }
@@ -52,8 +52,8 @@ public class UserService {
     public void addFriend(int id, int idFriend) {
         checkUserInStorage(id);
         checkUserInStorage(idFriend);
-        User user = inMemoryUserStorage.getUserFromId(id);
-        User friend = inMemoryUserStorage.getUserFromId(idFriend);
+        User user = inMemoryUserStorage.getFromId(id);
+        User friend = inMemoryUserStorage.getFromId(idFriend);
         user.addFriend(idFriend);
         friend.addFriend(id);
         log.info(LogMessage.ADD_FRIEND_DONE.getLogMassage());
@@ -62,22 +62,22 @@ public class UserService {
     public void deleteFriend(int id, int idNotFriend) {
         checkUserInStorage(id);
         checkUserInStorage(idNotFriend);
-        User user = inMemoryUserStorage.getUserFromId(id);
-        User notFriend = inMemoryUserStorage.getUserFromId(idNotFriend);
+        User user = inMemoryUserStorage.getFromId(id);
+        User notFriend = inMemoryUserStorage.getFromId(idNotFriend);
         user.deleteFriend(idNotFriend);
         notFriend.deleteFriend(id);
         log.info(LogMessage.DEL_FRIEND_DONE.getLogMassage());
     }
 
     public List<User> getUserFriends(int id) {
-        User user = inMemoryUserStorage.getUserFromId(id);
+        User user = inMemoryUserStorage.getFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
             throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
         }
         List<User> userFriends = new ArrayList<>();
         for (int i : user.getFriends()) {
-            userFriends.add(inMemoryUserStorage.getUserFromId(i));
+            userFriends.add(inMemoryUserStorage.getFromId(i));
         }
         return userFriends;
     }
@@ -100,7 +100,7 @@ public class UserService {
     }
 
     private void checkUserInStorage (int id) {
-        User user = inMemoryUserStorage.getUserFromId(id);
+        User user = inMemoryUserStorage.getFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
             throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);

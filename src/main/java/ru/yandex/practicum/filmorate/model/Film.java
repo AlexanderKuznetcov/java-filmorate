@@ -7,8 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class Film {
-    private int id;
+public class Film extends HavingId{
     private String name;
     private String description;
     private LocalDate releaseDate;
