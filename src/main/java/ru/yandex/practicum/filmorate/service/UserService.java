@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -85,18 +86,9 @@ public class UserService {
     public List<User> getCommonFriends(int id, int otherId) {
         checkUserInStorage(id);
         checkUserInStorage(otherId);
-        List<User> commonUsers = new ArrayList<>();
-        List<User> userFriends = this.getUserFriends(id);
-        List<User> otherUserFriends = this.getUserFriends(otherId);
-        for (User userFriend : userFriends) {
-            for (User otherUserFriend : otherUserFriends) {
-                if (userFriend.equals(otherUserFriend)) {
-                    commonUsers.add(userFriend);
-                    break;
-                }
-            }
-        }
-        return commonUsers;
+        List<User> friendsUser1 = this.getUserFriends(id);
+        List<User> friendsUser2 = this.getUserFriends(otherId);
+        return friendsUser1.stream().filter(friendsUser2::contains).collect(Collectors.toList());
     }
 
     private void checkUserInStorage (int id) {

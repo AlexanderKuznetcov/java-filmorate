@@ -16,20 +16,12 @@ public class User extends IdentifiableModel{
     private Set<Integer> friends = new TreeSet<>();
 
     public void addFriend (Integer userId) {
-        if (!friends.contains(userId)) {
             friends.add(userId);
-        }
     }
 
     public void deleteFriend (Integer userId) {
         if (friends.contains(userId)) {
             friends.remove(userId);
         }
-    }
-
-    public List<Integer> getFriends () {
-        List<Integer> friendsList = new ArrayList<Integer>();
-        friendsList.addAll(friends);
-        return friendsList;
     }
 }

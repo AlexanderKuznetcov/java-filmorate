@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.HavingId;
-import ru.yandex.practicum.filmorate.model.User;
+
+import ru.yandex.practicum.filmorate.model.IdentifiableModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class InMemoryStorage<T extends HavingId> {
+public abstract class InMemoryStorage<T extends IdentifiableModel> {
     private final Map<Integer, T> storage = new HashMap<>();
     private int currentId = 1;
 

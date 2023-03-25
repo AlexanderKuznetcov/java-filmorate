@@ -65,10 +65,8 @@ public class FilmService {
     }
 
     public List<Film> getPopular (int count) {
-        ArrayList<Film> allFilms =(ArrayList<Film>) inMemoryFilmStorage.get();
-        allFilms.sort(POPULAR_FILM_COMPARATOR);
-        Stream<Film> mostPopularFilms = allFilms.stream().limit(count);
-        return mostPopularFilms.collect(Collectors.toList());
+        return inMemoryFilmStorage.get().stream().sorted(POPULAR_FILM_COMPARATOR).limit(count)
+                .collect(Collectors.toList());
     }
 
     public Film updateFilm(Film film) {
