@@ -11,9 +11,8 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class FilmControllerTest {
+public class FilmServiceTest {
     private static final FilmService filmService = new FilmService(new InMemoryFilmStorage());
-    static FilmController filmController = new FilmController(filmService);
 
     @Test
     void isValidFilm() {

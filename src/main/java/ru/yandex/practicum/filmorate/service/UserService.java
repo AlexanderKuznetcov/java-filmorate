@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.User;
@@ -36,7 +36,7 @@ public class UserService {
     public User addUser(User user) {
         validateUser(user);
         User addUser = inMemoryUserStorage.add(user);
-        log.info(LogMessage.ADD_USER_DONE.getLogMassage() + addUser.getId());
+        log.info(LogMessage.ADD_USER_DONE.getLogMassage(), addUser.getId());
         return addUser;
     }
 
@@ -56,7 +56,7 @@ public class UserService {
         User friend = inMemoryUserStorage.getFromId(idFriend);
         user.addFriend(idFriend);
         friend.addFriend(id);
-        log.info(LogMessage.ADD_FRIEND_DONE.getLogMassage());
+        log.info(LogMessage.ADD_FRIEND_DONE.getLogMassage(), id, idFriend);
     }
 
     public void deleteFriend(int id, int idNotFriend) {
@@ -66,14 +66,14 @@ public class UserService {
         User notFriend = inMemoryUserStorage.getFromId(idNotFriend);
         user.deleteFriend(idNotFriend);
         notFriend.deleteFriend(id);
-        log.info(LogMessage.DEL_FRIEND_DONE.getLogMassage());
+        log.info(LogMessage.DEL_FRIEND_DONE.getLogMassage(), id, idNotFriend);
     }
 
     public List<User> getUserFriends(int id) {
         User user = inMemoryUserStorage.getFromId(id);
         if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), id);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + id);
         }
         List<User> userFriends = new ArrayList<>();
         for (int i : user.getFriends()) {
@@ -102,8 +102,8 @@ public class UserService {
     private void checkUserInStorage (int id) {
         User user = inMemoryUserStorage.getFromId(id);
         if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
-            throw new UserNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + id);
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), id);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + id);
         }
     }
 

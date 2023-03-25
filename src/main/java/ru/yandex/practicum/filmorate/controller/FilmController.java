@@ -22,18 +22,19 @@ public class FilmController implements Controller<Film>{
     @Override
     @GetMapping
     public List<Film> getAll() {
+        log.info(LogMessage.GET_FILMS.getLogMassage());
         return filmService.getFilms();
     }
 
     @GetMapping("/{id}")
     public Film getFilm(@PathVariable int id) {
-        log.info(LogMessage.GET_FILM.getLogMassage() + id);
+        log.info(LogMessage.GET_FILM.getLogMassage(), id);
         return filmService.getFilm(id);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(value = "count", defaultValue = "10") int count) {
-        log.info(LogMessage.GET_POPULAR.getLogMassage() + count);
+        log.info(LogMessage.GET_POPULAR.getLogMassage(), count);
         return filmService.getPopular(count);
     }
 
@@ -48,23 +49,19 @@ public class FilmController implements Controller<Film>{
     @PutMapping
     public Film update(@RequestBody Film film) {
         int id = film.getId();
-        log.info(LogMessage.UPDATE_FILM.getLogMassage() + id);
+        log.info(LogMessage.UPDATE_FILM.getLogMassage(), id);
         return filmService.updateFilm(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
-        log.info(LogMessage.ADD_LIKE.getLogMassage() + id);
+        log.info(LogMessage.ADD_LIKE.getLogMassage(), id);
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable int id, @PathVariable int userId) {
-        log.info(LogMessage.DEL_LIKE.getLogMassage() + id);
+        log.info(LogMessage.DEL_LIKE.getLogMassage(), id);
         filmService.deleteLike(id, userId);
-    }
-
-    public FilmService getFilmService() {
-        return filmService;
     }
 }

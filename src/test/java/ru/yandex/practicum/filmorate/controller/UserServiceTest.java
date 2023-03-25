@@ -11,7 +11,8 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UserControllerTest {
+public class UserServiceTest {
+    private static final UserService userService = new UserService(new InMemoryUserStorage());
     static UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
 
     @Test
@@ -21,7 +22,7 @@ public class UserControllerTest {
         validUser.setLogin("UserLogin");
         validUser.setEmail("user@mail.ru");
         validUser.setBirthday(LocalDate.of(1990,1,1));
-        userController.getUserService().validateUser(validUser);
+        userService.validateUser(validUser);
     }
 
     @Test
@@ -32,16 +33,16 @@ public class UserControllerTest {
         notValidUser.setEmail("user@mail.ru");
         notValidUser.setBirthday(LocalDate.of(1990,1,1));
         Exception exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Логин пустой или содержит пробел.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Логин пустой или содержит пробел", exception.getMessage());
         notValidUser.setLogin("");
         exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Логин пустой или содержит пробел.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Логин пустой или содержит пробел", exception.getMessage());
         notValidUser.setLogin("User Login");
         exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Логин пустой или содержит пробел.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Логин пустой или содержит пробел", exception.getMessage());
     }
 
     @Test
@@ -52,16 +53,16 @@ public class UserControllerTest {
         notValidUser.setEmail(null);
         notValidUser.setBirthday(LocalDate.of(1990,1,1));
         Exception exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Электронная почта пустая или без @.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Электронная почта пустая или без @", exception.getMessage());
         notValidUser.setEmail("");
         exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Электронная почта пустая или без @.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Электронная почта пустая или без @", exception.getMessage());
         notValidUser.setEmail("usermail.ru");
         exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Электронная почта пустая или без @.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Электронная почта пустая или без @", exception.getMessage());
     }
 
     @Test
@@ -72,8 +73,8 @@ public class UserControllerTest {
         notValidUser.setEmail("user@mail.ru");
         notValidUser.setBirthday(LocalDate.of(2100,1,1));
         Exception exception = assertThrows(ValidationException.class, () ->
-                userController.getUserService().validateUser(notValidUser));
-        assertEquals("Валидация не прошла! Дата рождения не может быть в будущем.", exception.getMessage());
+                userService.validateUser(notValidUser));
+        assertEquals("Валидация не прошла!Дата рождения не может быть в будущем", exception.getMessage());
     }
 
     @Test
@@ -83,10 +84,10 @@ public class UserControllerTest {
         notValidUser.setLogin("UserLogin");
         notValidUser.setEmail("user@mail.ru");
         notValidUser.setBirthday(LocalDate.of(1990,1,1));
-        userController.getUserService().validateUser(notValidUser);
+        userService.validateUser(notValidUser);
         assertEquals("UserLogin", notValidUser.getName());
         notValidUser.setName("    ");
-        userController.getUserService().validateUser(notValidUser);
+        userService.validateUser(notValidUser);
         assertEquals("UserLogin", notValidUser.getName());
     }
 }

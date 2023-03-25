@@ -28,19 +28,19 @@ public class UserController implements  Controller<User>{
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable int id) {
-        log.info(LogMessage.GET_USER.getLogMassage() + id);
+        log.info(LogMessage.GET_USER.getLogMassage(), id);
         return userService.getUser(id);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable int id) {
-        log.info(LogMessage.GET_FRIENDS.getLogMassage() + id);
+        log.info(LogMessage.GET_FRIENDS.getLogMassage(), id);
         return userService.getUserFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-        log.info(LogMessage.GET_COMMON_FRIENDS.getLogMassage() + id + " и " + otherId);
+        log.info(LogMessage.GET_COMMON_FRIENDS.getLogMassage(), id, otherId);
         return userService.getCommonFriends(id, otherId);
     }
 
@@ -55,23 +55,19 @@ public class UserController implements  Controller<User>{
     @PutMapping
     public User update(@RequestBody User user) {
         int id = user.getId();
-        log.info(LogMessage.UPDATE_USER.getLogMassage() + id);
+        log.info(LogMessage.UPDATE_USER.getLogMassage(), id);
         return userService.updateUser(user);
     }
 
     @PutMapping ("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info(LogMessage.ADD_FRIEND.getLogMassage() + friendId);
+        log.info(LogMessage.ADD_FRIEND.getLogMassage(), id, friendId);
         userService.addFriend(id, friendId);
     }
 
     @DeleteMapping ("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info(LogMessage.DEL_FRIEND.getLogMassage() + friendId);
+        log.info(LogMessage.DEL_FRIEND.getLogMassage(), id, friendId);
         userService.deleteFriend(id, friendId);
-    }
-
-    public UserService getUserService() {
-        return userService;
     }
 }

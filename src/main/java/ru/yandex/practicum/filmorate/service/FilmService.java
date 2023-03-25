@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -45,14 +45,14 @@ public class FilmService {
     public Film addFilm(Film film) {
         validateFilm(film);
         Film addFilm = inMemoryFilmStorage.add(film);
-        log.info(LogMessage.ADD_FILM_DONE.getLogMassage() + addFilm.getId());
+        log.info(LogMessage.ADD_FILM_DONE.getLogMassage(), addFilm.getId());
         return addFilm;
     }
 
     public void addLike(int filmId, int userId) {
         Film film = inMemoryFilmStorage.getFromId(filmId);
         checkFilmInStorage(filmId);
-        log.info(LogMessage.ADD_LIKE_DONE.getLogMassage());
+        log.info(LogMessage.ADD_LIKE_DONE.getLogMassage(), filmId, userId);
         film.addLike(userId);
     }
 
@@ -61,7 +61,7 @@ public class FilmService {
         checkFilmInStorage(filmId);
         checkLikeOfUser(filmId, userId);
         film.deleteLike(userId);
-        log.info(LogMessage.DEL_LIKE_DONE.getLogMassage());
+        log.info(LogMessage.DEL_LIKE_DONE.getLogMassage(), filmId, userId);
     }
 
     public List<Film> getPopular (int count) {
@@ -76,22 +76,22 @@ public class FilmService {
         validateFilm(film);
         checkFilmInStorage(id);
         Film updateFilm = inMemoryFilmStorage.update(film);
-        log.info(LogMessage.UPDATE_FILM_DONE.getLogMassage());
+        log.info(LogMessage.UPDATE_FILM_DONE.getLogMassage(), id);
         return updateFilm;
     }
 
     private void checkFilmInStorage (int filmId) {
         if (inMemoryFilmStorage.getFromId(filmId) == null) {
-            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
-            throw new FilmNotFoundException(LogMessage.FILM_NOT_FOUND.getLogMassage() + filmId);
+            log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage(), filmId);
+            throw new ObjectNotFoundException(LogMessage.FILM_NOT_FOUND_EXC.getLogMassage() + filmId);
         }
     }
 
     private void checkLikeOfUser (int filmId, int userId) {
         Film film = inMemoryFilmStorage.getFromId(filmId);
         if (!film.getUsersIdWhoLike().contains(userId)) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
-            throw new FilmNotFoundException(LogMessage.USER_NOT_FOUND.getLogMassage() + userId);
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
         }
     }
 

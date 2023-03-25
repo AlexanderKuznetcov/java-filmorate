@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class Film extends HavingId{
+public class Film extends IdentifiableModel{
     private String name;
     private String description;
     private LocalDate releaseDate;

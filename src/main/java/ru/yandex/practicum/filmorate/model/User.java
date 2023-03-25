@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class User extends HavingId{
+public class User extends IdentifiableModel{
     private String email;
     private String login;
     private String name;
