@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
-    static FilmController filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
+    private static final FilmService filmService = new FilmService(new InMemoryFilmStorage());
+    static FilmController filmController = new FilmController(filmService);
 
     @Test
     void isValidFilm() {
@@ -21,7 +22,7 @@ public class FilmControllerTest {
         validFilm.setDescription("Film description");
         validFilm.setReleaseDate(LocalDate.of(2000,1,1));
         validFilm.setDuration(100);
-        filmController.getFilmService().validateFilm(validFilm);
+        filmService.validateFilm(validFilm);
     }
 
     @Test
@@ -32,12 +33,12 @@ public class FilmControllerTest {
         notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Пустое имя фильма.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Пустое имя фильма", exception.getMessage());
         notValidFilm.setName(" ");
         exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Пустое имя фильма.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Пустое имя фильма", exception.getMessage());
     }
 
     @Test
@@ -50,8 +51,8 @@ public class FilmControllerTest {
         notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Описание более 200 символов.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Описание более 200 символов", exception.getMessage());
     }
 
     @Test
@@ -62,8 +63,8 @@ public class FilmControllerTest {
         notValidFilm.setReleaseDate(LocalDate.of(1895,12,27));
         notValidFilm.setDuration(100);
         Exception exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Слишком ранний релиз.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Слишком ранний релиз", exception.getMessage());
     }
 
     @Test
@@ -74,11 +75,11 @@ public class FilmControllerTest {
         notValidFilm.setReleaseDate(LocalDate.of(2000,1,1));
         notValidFilm.setDuration(0);
         Exception exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Продолжительность отрицательная или 0.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Продолжительность отрицательная или 0", exception.getMessage());
         notValidFilm.setDuration(-10);
         exception = assertThrows(ValidationException.class, () ->
-                filmController.getFilmService().validateFilm(notValidFilm));
-        assertEquals("Валидация не прошла! Продолжительность отрицательная или 0.", exception.getMessage());
+                filmService.validateFilm(notValidFilm));
+        assertEquals("Валидация не прошла!Продолжительность отрицательная или 0", exception.getMessage());
     }
 }
