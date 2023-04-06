@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS films(
     description VARCHAR(255) NOT NULL,
     release_date DATE NOT NULL,
     duration INT NOT NULL,
-    mpa_id INT REFERENCES mpas(mpa_id) NOT NULL
+    mpa_id INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS genres(
@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS genres(
 );
 
 CREATE TABLE IF NOT EXISTS films_genres(
-    film_id INT REFERENCES films(film_id) NOT NULL,
-    genre_id INT REFERENCES genres(genre_id) NOT NULL,
-    PRIMARY KEY (film_id, genre_id)
+    id serial PRIMARY KEY,
+    film_id INT NOT NULL,
+    genre_id INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users(
@@ -33,13 +33,13 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS films_likes(
-    user_id INT REFERENCES users(user_id) NOT NULL,
-    film_id INT REFERENCES films(film_id) NOT NULL,
-	PRIMARY KEY (user_id, film_id)
+    id serial PRIMARY KEY,
+    user_id INT NOT NULL,
+    film_id INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS friends(
-    user_id INT REFERENCES users(user_id) NOT NULL,
-    friend_id INT NOT NULL,
-	PRIMARY KEY (user_id, friend_id)
+    id serial PRIMARY KEY,
+    user_id INT NOT NULL,
+    friend_id INT NOT NULL
 );

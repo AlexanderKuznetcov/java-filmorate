@@ -1,9 +1,9 @@
-INSERT INTO genres (name) VALUES('комедия');
-INSERT INTO genres (name) VALUES('драмма');
-INSERT INTO genres (name) VALUES('мультфильм');
-INSERT INTO genres (name) VALUES('триллер');
-INSERT INTO genres (name) VALUES('документальный');
-INSERT INTO genres (name) VALUES('боевик');
+INSERT INTO genres (name) VALUES('Комедия');
+INSERT INTO genres (name) VALUES('Драмма');
+INSERT INTO genres (name) VALUES('Мультфильм');
+INSERT INTO genres (name) VALUES('Триллер');
+INSERT INTO genres (name) VALUES('Документальный');
+INSERT INTO genres (name) VALUES('Боевик');
 
 
 

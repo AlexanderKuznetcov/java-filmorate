@@ -7,14 +7,12 @@ import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -23,41 +21,41 @@ public class FilmService {
     private static final LocalDate DATE_OF_FIRST_MOVIE = LocalDate.of(1895, 12, 28);
     private static final Comparator<Film> POPULAR_FILM_COMPARATOR =
             (film1, film2) -> film2.getLikesCount() - film1.getLikesCount();
-    private final InMemoryFilmStorage inMemoryFilmStorage;
+    private final FilmDbStorage filmDbStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
+    public FilmService(FilmDbStorage filmDbStorage) {
+        this.filmDbStorage = filmDbStorage;
     }
 
     public List<Film> getFilms() {
         log.info(LogMessage.GET_FILMS.getLogMassage());
-        return inMemoryFilmStorage.get();
+        return filmDbStorage.get();
     }
 
     public Film getFilm(int id) {
         checkFilmInStorage(id);
-        Film film = inMemoryFilmStorage.getFromId(id);
+        Film film = filmDbStorage.getFromId(id);
         return film;
     }
 
 
     public Film addFilm(Film film) {
         validateFilm(film);
-        Film addFilm = inMemoryFilmStorage.add(film);
+        Film addFilm = filmDbStorage.add(film);
         log.info(LogMessage.ADD_FILM_DONE.getLogMassage(), addFilm.getId());
         return addFilm;
     }
 
     public void addLike(int filmId, int userId) {
-        Film film = inMemoryFilmStorage.getFromId(filmId);
+        Film film = filmDbStorage.getFromId(filmId);
         checkFilmInStorage(filmId);
         log.info(LogMessage.ADD_LIKE_DONE.getLogMassage(), filmId, userId);
         film.addLike(userId);
     }
 
     public void deleteLike(int filmId, int userId) {
-        Film film = inMemoryFilmStorage.getFromId(filmId);
+        Film film = filmDbStorage.getFromId(filmId);
         checkFilmInStorage(filmId);
         checkLikeOfUser(filmId, userId);
         film.deleteLike(userId);
@@ -65,7 +63,7 @@ public class FilmService {
     }
 
     public List<Film> getPopular (int count) {
-        return inMemoryFilmStorage.get().stream().sorted(POPULAR_FILM_COMPARATOR).limit(count)
+        return filmDbStorage.get().stream().sorted(POPULAR_FILM_COMPARATOR).limit(count)
                 .collect(Collectors.toList());
     }
 
@@ -73,20 +71,20 @@ public class FilmService {
         int id = film.getId();
         validateFilm(film);
         checkFilmInStorage(id);
-        Film updateFilm = inMemoryFilmStorage.update(film);
+        Film updateFilm = filmDbStorage.update(film);
         log.info(LogMessage.UPDATE_FILM_DONE.getLogMassage(), id);
         return updateFilm;
     }
 
     private void checkFilmInStorage (int filmId) {
-        if (inMemoryFilmStorage.getFromId(filmId) == null) {
+        if (filmDbStorage.getFromId(filmId) == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage(), filmId);
             throw new ObjectNotFoundException(LogMessage.FILM_NOT_FOUND_EXC.getLogMassage() + filmId);
         }
     }
 
     private void checkLikeOfUser (int filmId, int userId) {
-        Film film = inMemoryFilmStorage.getFromId(filmId);
+        Film film = filmDbStorage.getFromId(filmId);
         if (!film.getUsersIdWhoLike().contains(userId)) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
             throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);

@@ -10,4 +10,6 @@ public interface Storage<T> {
     T update(T t);
 
     T delete(T t);
+
+    T getFromId(int id);
 }
