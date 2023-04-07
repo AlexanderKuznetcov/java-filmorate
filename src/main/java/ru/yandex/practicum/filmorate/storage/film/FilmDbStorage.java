@@ -15,7 +15,6 @@ import java.util.List;
 
 @Component
 public class FilmDbStorage implements Storage<Film> {
-
     private final JdbcTemplate jdbcTemplate;
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
 
@@ -66,13 +65,6 @@ public class FilmDbStorage implements Storage<Film> {
                 + film.getDescription() + ", release_date = " + film.getReleaseDate() + ", duration = "
                 + film.getReleaseDate() + " WHERE film_id = " + film.getId());
         jdbcTemplate.execute("DELETE FROM films_genres WHERE film_id = " + film.getId());
-//        for (String genreName : film.getGenres()){
-//            SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM genres WHERE name = '?'", genreName);
-//            if(genreIdR.next()) {
-//                jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" + film.getId() +
-//                        "," + genreIdR.getInt("genre_id")+ ")");
-//            }
-//        }
         return this.getFromId(film.getId());
     }
 
@@ -88,16 +80,27 @@ public class FilmDbStorage implements Storage<Film> {
             log.info("Найден фильм: id={}, name={}, description={}", fR.getInt("film_id"),
                     fR.getString("name"), fR.getString("description"));
             List<Genre> genresList = new ArrayList<>();
-            SqlRowSet gR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM films_genres WHERE film_id=?",
-                    fR.getInt("film_id"));
+            SqlRowSet gR = jdbcTemplate.queryForRowSet("SELECT fg.genre_id, g.name FROM films_genres AS fg " +
+                    "JOIN genres AS g ON fg.genre_id = g.genre_id WHERE fg.film_id=?", fR.getInt("film_id"));
             while(gR.next()) {
-                System.out.println(gR.getInt("genre_id"));
-                genresList.add(new Genre(gR.getInt("genre_id")));
+                genresList.add(new Genre(gR.getInt("fg.genre_id"), gR.getString("g.name")));
+            }
+            int rate = 0;
+            SqlRowSet lR = jdbcTemplate.queryForRowSet("SELECT COUNT(user_id) as count_likes FROM films_likes WHERE " +
+                            "film_id=?", id);
+            if(lR.next()) {
+                rate = lR.getInt("count_likes");
+            }
+            String mpa_name = null;
+            SqlRowSet mR = jdbcTemplate.queryForRowSet("SELECT name FROM mpas WHERE mpa_id=7",
+                    fR.getInt("mpa_id"));
+            if(lR.next()) {
+                mpa_name = mR.getString("name");
             }
             Film film = new Film(fR.getInt("film_id"),
                     fR.getString("name"), fR.getString("description"),
                     fR.getDate("release_date").toLocalDate(), fR.getInt("duration"),
-                    new Mpa(fR.getInt("mpa_id")), genresList);
+                    new Mpa(fR.getInt("mpa_id"), mpa_name), genresList, rate);
             return film;
         } else {
             return null;

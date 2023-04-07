@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 
 @Data
-public class Mpa {
-    private int id;
+public class Mpa extends IdentifiableModelWithName{
 
     public Mpa() {
     }
 
-    public Mpa(int id) {
+    public Mpa(int id, String name) {
         this.id = id;
+        this.name = name;
     }
 }

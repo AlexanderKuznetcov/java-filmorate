@@ -7,10 +7,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class User extends IdentifiableModel{
+public class User extends IdentifiableModelWithName{
     private String email;
     private String login;
-    private String name;
     private LocalDate birthday;
     @JsonIgnore
     private Set<Integer> friends = new TreeSet<>();

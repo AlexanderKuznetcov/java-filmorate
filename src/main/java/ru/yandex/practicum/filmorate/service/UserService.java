@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,28 +59,20 @@ public class UserService {
     public void deleteFriend(int id, int idNotFriend) {
         checkUserInDb(id);
         checkUserInDb(idNotFriend);
-        User user = userDbStorage.getFromId(id);
-        User notFriend = userDbStorage.getFromId(idNotFriend);
-        user.deleteFriend(idNotFriend);
-        notFriend.deleteFriend(id);
+        userDbStorage.deleteFriend(id, idNotFriend);
         log.info(LogMessage.DEL_FRIEND_DONE.getLogMassage(), id, idNotFriend);
     }
 
     public List<User> getUserFriends(int id) {
-        User user = userDbStorage.getFromId(id);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), id);
-            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + id);
-        }
-        List<User> userFriends = userDbStorage.getFriends(id);
-        return userFriends;
+        checkUserInDb(id);
+        return userDbStorage.getFriends(id);
     }
 
     public List<User> getCommonFriends(int id, int otherId) {
         checkUserInDb(id);
         checkUserInDb(otherId);
-        List<User> friendsUser1 = this.getUserFriends(id);
-        List<User> friendsUser2 = this.getUserFriends(otherId);
+        List<User> friendsUser1 = userDbStorage.getFriends(id);
+        List<User> friendsUser2 = userDbStorage.getFriends(otherId);
         return friendsUser1.stream().filter(friendsUser2::contains).collect(Collectors.toList());
     }
 
