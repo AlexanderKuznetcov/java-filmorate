@@ -41,36 +41,52 @@ public class FilmDbStorage implements Storage<Film> {
         if(idR.next()) {
             newId = idR.getInt("max_id");
         }
-        for (Genre genre : film.getGenres()){
-            int genreId = genre.getId();
-            SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM genres WHERE genre_id=?", genreId);
-            if(genreIdR.next()) {
-                jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" +
-                        newId + ", " + genreIdR.getInt("genre_id") + ")");
-                System.out.println("жанр добавлен");
-            } else {
-                log.info("Жанр id=? не найден в базе жанров", genreId);
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()){
+                int genreId = genre.getId();
+                System.out.println("genre_id = " + genreId);
+                SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT name FROM genres WHERE genre_id=?",
+                        genreId);
+                if(genreIdR.next()) {
+                    System.out.println("есть такой жанр");
+                    jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" +
+                            newId + ", " + genreId + ")");
+                } else {
+                    log.info("Жанр id=? не найден в базе жанров", genreId);
+                }
             }
         }
-        SqlRowSet iR = jdbcTemplate.queryForRowSet("SELECT MAX(film_id) AS max_id FROM films");
-        if(iR.next()) {
-            return this.getFromId(iR.getInt("max_id"));
-        } else {
-            return null;
-        }
+        jdbcTemplate.execute("INSERT INTO films_rate (film_id, rate) VALUES(" + newId + ", "
+                + film.getRate() + ")");
+        return this.getFromId(newId);
     }
 
     public Film update(Film film){
-        jdbcTemplate.execute("UPDATE films SET name = " + film.getName() + ", description = "
-                + film.getDescription() + ", release_date = " + film.getReleaseDate() + ", duration = "
-                + film.getReleaseDate() + " WHERE film_id = " + film.getId());
+        jdbcTemplate.execute("UPDATE films SET name = '" + film.getName() + "', description = '"
+                + film.getDescription() + "', release_date = '" + film.getReleaseDate() + "', duration = "
+                + film.getDuration() + ", mpa_id = " + film.getMpa().getId() + " WHERE film_id = " + film.getId());
+        jdbcTemplate.execute("UPDATE films_rate SET rate = " + film.getRate() + " WHERE film_id = " + film.getId());
         jdbcTemplate.execute("DELETE FROM films_genres WHERE film_id = " + film.getId());
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()){
+                int genreId = genre.getId();
+                SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM genres WHERE genre_id=?",
+                        genreId);
+                if(genreIdR.next()) {
+                    jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" +
+                            film.getId() + ", " + genreIdR.getInt("genre_id") + ")");
+                } else {
+                    log.info("Жанр id=? не найден в базе жанров", genreId);
+                }
+            }
+        }
         return this.getFromId(film.getId());
     }
 
     public Film delete(Film film){
         jdbcTemplate.execute("DELETE FROM films WHERE film_id = " + film.getId());
         jdbcTemplate.execute("DELETE FROM films_genres WHERE film_id = " + film.getId());
+        jdbcTemplate.execute("DELETE FROM films_rate WHERE film_id = " + film.getId());
         return film;
     }
 
@@ -79,23 +95,41 @@ public class FilmDbStorage implements Storage<Film> {
         if(fR.next()) {
             log.info("Найден фильм: id={}, name={}, description={}", fR.getInt("film_id"),
                     fR.getString("name"), fR.getString("description"));
+            int mpa_id = fR.getInt("mpa_id");
+
+            System.out.println("mpa_id = " + mpa_id);
+
             List<Genre> genresList = new ArrayList<>();
-            SqlRowSet gR = jdbcTemplate.queryForRowSet("SELECT fg.genre_id, g.name FROM films_genres AS fg " +
-                    "JOIN genres AS g ON fg.genre_id = g.genre_id WHERE fg.film_id=?", fR.getInt("film_id"));
-            while(gR.next()) {
-                genresList.add(new Genre(gR.getInt("fg.genre_id"), gR.getString("g.name")));
+            SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM films_genres WHERE film_id=?",
+                    id);
+            while(genreIdR.next()) {
+                int genreId = genreIdR.getInt("genre_id");
+                System.out.println("добавление genre id =" + genreId);
+                SqlRowSet genreNameR = jdbcTemplate.queryForRowSet("SELECT name FROM genres WHERE genre_id=?",
+                        genreId);
+                if(genreNameR.next()) {
+                    String genreName = genreNameR.getString("name");
+                    genresList.add(new Genre(genreId, genreName));
+                }
             }
+
+            for(Genre genre: genresList){
+                System.out.println(genre.getName());
+            }
+
             int rate = 0;
-            SqlRowSet lR = jdbcTemplate.queryForRowSet("SELECT COUNT(user_id) as count_likes FROM films_likes WHERE " +
+            SqlRowSet lR = jdbcTemplate.queryForRowSet("SELECT rate FROM films_rate WHERE " +
                             "film_id=?", id);
             if(lR.next()) {
-                rate = lR.getInt("count_likes");
+                rate = lR.getInt("rate");
+                System.out.println(rate);
             }
             String mpa_name = null;
-            SqlRowSet mR = jdbcTemplate.queryForRowSet("SELECT name FROM mpas WHERE mpa_id=7",
-                    fR.getInt("mpa_id"));
-            if(lR.next()) {
+            SqlRowSet mR = jdbcTemplate.queryForRowSet("SELECT name FROM mpas WHERE mpa_id=?",
+                    mpa_id);
+            if(mR.next()) {
                 mpa_name = mR.getString("name");
+                System.out.println(mpa_name);
             }
             Film film = new Film(fR.getInt("film_id"),
                     fR.getString("name"), fR.getString("description"),

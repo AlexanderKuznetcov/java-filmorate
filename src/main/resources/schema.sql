@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS mpas(
     mpa_id serial PRIMARY KEY,
-    name VARCHAR(5) NOT NULL,
+    name VARCHAR(10) NOT NULL,
     description VARCHAR(255) NOT NULL
 );
 
@@ -32,10 +32,10 @@ CREATE TABLE IF NOT EXISTS users(
     birthday DATE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS films_likes(
+CREATE TABLE IF NOT EXISTS films_rate(
     id serial PRIMARY KEY,
-    user_id INT NOT NULL,
-    film_id INT NOT NULL
+    film_id INT NOT NULL,
+    rate INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS friends(

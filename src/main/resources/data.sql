@@ -5,8 +5,6 @@ INSERT INTO genres (name) VALUES('Триллер');
 INSERT INTO genres (name) VALUES('Документальный');
 INSERT INTO genres (name) VALUES('Боевик');
 
-
-
 INSERT INTO mpas (name, description) VALUES('G', 'у фильма нет возрастных ограничений');
 INSERT INTO mpas (name, description) VALUES('PG', 'детям рекомендуется смотреть фильм с родителями');
 INSERT INTO mpas (name, description) VALUES('PG-13', 'детям до 13 лет просмотр не желателен');
