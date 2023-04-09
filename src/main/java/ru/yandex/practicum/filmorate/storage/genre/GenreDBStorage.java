@@ -16,19 +16,19 @@ public class GenreDBStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Genre> get(){
+    public List<Genre> get() {
         List<Genre> genreList = new ArrayList<>();
         SqlRowSet genreR = jdbcTemplate.queryForRowSet("SELECT * FROM genres");
-        while(genreR.next()) {
+        while (genreR.next()) {
             Genre genre = new Genre(genreR.getInt("genre_id"), genreR.getString("name"));
             genreList.add(genre);
         }
         return genreList;
     }
 
-    public Genre getFromId(int id){
+    public Genre getFromId(int id) {
         SqlRowSet genreR = jdbcTemplate.queryForRowSet("SELECT * FROM genres WHERE genre_id=?", id);
-        if(genreR.next()) {
+        if (genreR.next()) {
             return new Genre(genreR.getInt("genre_id"), genreR.getString("name"));
         } else {
             return null;

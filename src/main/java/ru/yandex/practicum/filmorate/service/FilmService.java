@@ -70,7 +70,7 @@ public class FilmService {
         log.info(LogMessage.DEL_LIKE_DONE.getLogMassage(), filmId, userId);
     }
 
-    public List<Film> getPopular (int count) {
+    public List<Film> getPopular(int count) {
         return filmDbStorage.getPopular(count);
     }
 
@@ -83,14 +83,14 @@ public class FilmService {
         return updateFilm;
     }
 
-    private void checkFilmInDb (int filmId) {
+    private void checkFilmInDb(int filmId) {
         if (filmDbStorage.getFromId(filmId) == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage(), filmId);
             throw new ObjectNotFoundException(LogMessage.FILM_NOT_FOUND_EXC.getLogMassage() + filmId);
         }
     }
 
-    public void validateFilm (Film film) throws ValidationException {
+    public void validateFilm(Film film) throws ValidationException {
         StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());
         String name = film.getName();
         if (name == null || name.isBlank()) {

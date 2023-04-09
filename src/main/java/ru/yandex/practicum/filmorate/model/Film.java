@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class Film extends IdentifiableModelWithName{
+public class Film extends IdentifiableModelWithName {
     private String name;
     private String description;
     private LocalDate releaseDate;

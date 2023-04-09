@@ -76,7 +76,7 @@ public class UserService {
         return friendsUser1.stream().filter(friendsUser2::contains).collect(Collectors.toList());
     }
 
-    private void checkUserInDb (int id) {
+    private void checkUserInDb(int id) {
         User user = userDbStorage.getFromId(id);
         if (user == null) {
             log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), id);
@@ -84,7 +84,7 @@ public class UserService {
         }
     }
 
-    public void validateUser (User user) throws ValidationException {
+    public void validateUser(User user) throws ValidationException {
         StringBuilder message = new StringBuilder(LogMessage.VALIDATION_FAIL.getLogMassage());
         String email = user.getEmail();
         if (email == null || email.isBlank() || !email.contains("@")) {

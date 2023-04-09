@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,10 +11,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-public class UserController implements  Controller<User>{
+public class UserController implements  Controller<User> {
     private final UserService userService;
 
-    public UserController (UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
