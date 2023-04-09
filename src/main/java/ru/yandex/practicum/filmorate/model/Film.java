@@ -16,10 +16,6 @@ public class Film extends IdentifiableModelWithName{
     private List<Genre> genres;
     private int rate;
 
-    @JsonIgnore
-    private Set<Integer> usersIdWhoLike = new TreeSet<>();
-
-
     public Film() {
     }
 
@@ -33,17 +29,5 @@ public class Film extends IdentifiableModelWithName{
         this.mpa = mpa;
         this.genres = genres;
         this.rate = rate;
-    }
-
-    public void addLike(int userId) {
-        usersIdWhoLike.add(userId);
-    }
-
-    public void deleteLike(Integer userId) {
-        usersIdWhoLike.remove(userId);
-    }
-
-    public int getLikesCount() {
-        return usersIdWhoLike.size();
     }
 }

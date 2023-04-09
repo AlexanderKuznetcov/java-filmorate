@@ -7,25 +7,25 @@ import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.message.LogMessage;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
     private static final int MAX_DESCRIPTION_LENGTH = 200;
     private static final LocalDate DATE_OF_FIRST_MOVIE = LocalDate.of(1895, 12, 28);
-    private static final Comparator<Film> POPULAR_FILM_COMPARATOR =
-            (film1, film2) -> film2.getLikesCount() - film1.getLikesCount();
     private final FilmDbStorage filmDbStorage;
+    private final UserDbStorage userDbStorage;
 
     @Autowired
-    public FilmService(FilmDbStorage filmDbStorage) {
+    public FilmService(FilmDbStorage filmDbStorage, UserDbStorage userDbStorage) {
         this.filmDbStorage = filmDbStorage;
+        this.userDbStorage = userDbStorage;
     }
 
     public List<Film> getFilms() {
@@ -34,7 +34,7 @@ public class FilmService {
     }
 
     public Film getFilm(int id) {
-        checkFilmInStorage(id);
+        checkFilmInDb(id);
         Film film = filmDbStorage.getFromId(id);
         return film;
     }
@@ -48,46 +48,45 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        Film film = filmDbStorage.getFromId(filmId);
-        checkFilmInStorage(filmId);
+        checkFilmInDb(filmId);
+        User user = userDbStorage.getFromId(userId);
+        if (user == null) {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
+        }
+        filmDbStorage.addLike(filmId);
         log.info(LogMessage.ADD_LIKE_DONE.getLogMassage(), filmId, userId);
-        film.addLike(userId);
+
     }
 
     public void deleteLike(int filmId, int userId) {
-        Film film = filmDbStorage.getFromId(filmId);
-        checkFilmInStorage(filmId);
-        checkLikeOfUser(filmId, userId);
-        film.deleteLike(userId);
+        checkFilmInDb(filmId);
+        User user = userDbStorage.getFromId(userId);
+        if (user == null) {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
+        }
+        filmDbStorage.deleteLike(userId);
         log.info(LogMessage.DEL_LIKE_DONE.getLogMassage(), filmId, userId);
     }
 
     public List<Film> getPopular (int count) {
-        return filmDbStorage.get().stream().sorted(POPULAR_FILM_COMPARATOR).limit(count)
-                .collect(Collectors.toList());
+        return filmDbStorage.getPopular(count);
     }
 
     public Film updateFilm(Film film) {
         int id = film.getId();
         validateFilm(film);
-        checkFilmInStorage(id);
+        checkFilmInDb(id);
         Film updateFilm = filmDbStorage.update(film);
         log.info(LogMessage.UPDATE_FILM_DONE.getLogMassage(), id);
         return updateFilm;
     }
 
-    private void checkFilmInStorage (int filmId) {
+    private void checkFilmInDb (int filmId) {
         if (filmDbStorage.getFromId(filmId) == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage(), filmId);
             throw new ObjectNotFoundException(LogMessage.FILM_NOT_FOUND_EXC.getLogMassage() + filmId);
-        }
-    }
-
-    private void checkLikeOfUser (int filmId, int userId) {
-        Film film = filmDbStorage.getFromId(filmId);
-        if (!film.getUsersIdWhoLike().contains(userId)) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
-            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
         }
     }
 

@@ -11,8 +11,6 @@ public class User extends IdentifiableModelWithName{
     private String email;
     private String login;
     private LocalDate birthday;
-    @JsonIgnore
-    private Set<Integer> friends = new TreeSet<>();
 
     public User() {
     }
@@ -23,15 +21,5 @@ public class User extends IdentifiableModelWithName{
         this.login = login;
         this.name = name;
         this.birthday = birthday;
-    }
-
-    public void addFriend (Integer userId) {
-            friends.add(userId);
-    }
-
-    public void deleteFriend (Integer userId) {
-        if (friends.contains(userId)) {
-            friends.remove(userId);
-        }
     }
 }

@@ -19,9 +19,10 @@ CREATE TABLE IF NOT EXISTS genres(
 );
 
 CREATE TABLE IF NOT EXISTS films_genres(
-    id serial PRIMARY KEY,
+    --id serial PRIMARY KEY,
     film_id INT NOT NULL,
-    genre_id INT NOT NULL
+    genre_id INT NOT NULL,
+    PRIMARY KEY (film_id,genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS users(
@@ -33,13 +34,15 @@ CREATE TABLE IF NOT EXISTS users(
 );
 
 CREATE TABLE IF NOT EXISTS films_rate(
-    id serial PRIMARY KEY,
+    --id serial PRIMARY KEY,
     film_id INT NOT NULL,
-    rate INT NOT NULL
+    rate INT NOT NULL,
+    PRIMARY KEY (film_id,rate)
 );
 
 CREATE TABLE IF NOT EXISTS friends(
-    id serial PRIMARY KEY,
+    --id serial PRIMARY KEY,
     user_id INT NOT NULL,
-    friend_id INT NOT NULL
+    friend_id INT NOT NULL,
+    PRIMARY KEY (user_id,friend_id)
 );
