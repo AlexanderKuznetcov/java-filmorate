@@ -6,19 +6,18 @@ import java.util.*;
 
 @Data
 public class Film extends IdentifiableModelWithName {
-    private String name;
     private String description;
     private LocalDate releaseDate;
     private int duration;
     private Mpa mpa;
-    private List<Genre> genres;
+    private Set<Genre> genres;
     private int rate;
 
     public Film() {
     }
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration,
-                Mpa mpa, List<Genre> genres, int rate) {
+                Mpa mpa, Set<Genre> genres, int rate) {
         this.id = id;
         this.name = name;
         this.description = description;

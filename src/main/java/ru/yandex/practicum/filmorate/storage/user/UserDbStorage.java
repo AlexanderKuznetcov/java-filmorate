@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -15,26 +14,19 @@ import java.util.List;
 public class UserDbStorage implements Storage<User> {
 
     private final JdbcTemplate jdbcTemplate;
-    private final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<User> get() {
-        List<User> usersList = new ArrayList<>();
-        SqlRowSet idR = jdbcTemplate.queryForRowSet("SELECT user_id FROM users");
-        while (idR.next()) {
-            User user = this.getFromId(idR.getInt("user_id"));
-            usersList.add(user);
-        }
-        return usersList;
+        return jdbcTemplate.query("SELECT * FROM users",new UserMapper());
     }
 
     public User add(User user) {
         jdbcTemplate.execute("INSERT INTO users (email, login, name, birthday) " +
                 "VALUES('" + user.getEmail() + "', '" + user.getLogin() + "', '" + user.getName() + "', '"
-                + user.getBirthday() + "')");
+                + user.getBirthday() + "');");
         SqlRowSet iR = jdbcTemplate.queryForRowSet("SELECT MAX(user_id) AS max_id FROM users");
         if (iR.next()) {
             return this.getFromId(iR.getInt("max_id"));
@@ -75,17 +67,18 @@ public class UserDbStorage implements Storage<User> {
         return friends;
     }
 
-    public User getFromId(int id) {
-        SqlRowSet uR = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id=?", id);
-        if (uR.next()) {
-            log.info("Найден пользователь: id = {}, login = {}, name = {}", uR.getString("user_id"),
-                    uR.getString("login"), uR.getString("name"));
-            User user = new User(uR.getInt("user_id"),
-                    uR.getString("email"), uR.getString("login"),
-                    uR.getString("name"), uR.getDate("birthday").toLocalDate());
-            return user;
-        } else {
-            return null;
+    public List<User> getCommonFriends(int id, int otherId) {
+        List<User> commonFriends = new ArrayList<>();
+        SqlRowSet fR = jdbcTemplate.queryForRowSet("SELECT friend_id FROM friends WHERE user_id=? " +
+                "AND friend_id IN (SELECT friend_id FROM friends WHERE user_id=?)", id, otherId);
+        while (fR.next()) {
+            commonFriends.add(this.getFromId(fR.getInt("friend_id")));
         }
+        return commonFriends;
+    }
+
+    public User getFromId(int id) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE user_id=?", new Object[]{id},
+                new UserMapper()).stream().findAny().orElse(null);
     }
 }

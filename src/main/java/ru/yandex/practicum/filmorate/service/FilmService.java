@@ -50,22 +50,15 @@ public class FilmService {
     public void addLike(int filmId, int userId) {
         checkFilmInDb(filmId);
         User user = userDbStorage.getFromId(userId);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
-            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
-        }
+        checkNullUser(user, userId);
         filmDbStorage.addLike(filmId);
         log.info(LogMessage.ADD_LIKE_DONE.getLogMassage(), filmId, userId);
-
     }
 
     public void deleteLike(int filmId, int userId) {
         checkFilmInDb(filmId);
         User user = userDbStorage.getFromId(userId);
-        if (user == null) {
-            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
-            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
-        }
+        checkNullUser(user, userId);
         filmDbStorage.deleteLike(userId);
         log.info(LogMessage.DEL_LIKE_DONE.getLogMassage(), filmId, userId);
     }
@@ -87,6 +80,13 @@ public class FilmService {
         if (filmDbStorage.getFromId(filmId) == null) {
             log.warn(LogMessage.FILM_NOT_FOUND.getLogMassage(), filmId);
             throw new ObjectNotFoundException(LogMessage.FILM_NOT_FOUND_EXC.getLogMassage() + filmId);
+        }
+    }
+
+    private void checkNullUser(User user, int userId) {
+        if (user == null) {
+            log.warn(LogMessage.USER_NOT_FOUND.getLogMassage(), userId);
+            throw new ObjectNotFoundException(LogMessage.USER_NOT_FOUND_EXC.getLogMassage() + userId);
         }
     }
 

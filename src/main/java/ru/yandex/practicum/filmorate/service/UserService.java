@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -71,9 +70,7 @@ public class UserService {
     public List<User> getCommonFriends(int id, int otherId) {
         checkUserInDb(id);
         checkUserInDb(otherId);
-        List<User> friendsUser1 = userDbStorage.getFriends(id);
-        List<User> friendsUser2 = userDbStorage.getFriends(otherId);
-        return friendsUser1.stream().filter(friendsUser2::contains).collect(Collectors.toList());
+        return userDbStorage.getCommonFriends(id, otherId);
     }
 
     private void checkUserInDb(int id) {

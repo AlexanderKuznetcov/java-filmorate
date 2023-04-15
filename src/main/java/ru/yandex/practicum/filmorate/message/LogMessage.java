@@ -17,6 +17,7 @@ public enum LogMessage {
     UPDATE_USER("PUT: Получен запрос на обновление пользователя c id = {}"),
     UPDATE_FILM_DONE("Фильм с id= {} обновлен"),
     UPDATE_USER_DONE("Пользователь с id= {} обновлен"),
+    OBJ_NOT_FOUND("Объект не найден!"),
     FILM_NOT_FOUND("В списке отсутствует фильм с id = {}"),
     USER_NOT_FOUND("В списке отсутствует пользователь с id = {}"),
     MPA_NOT_FOUND("В списке отсутствует возрастной рейтинг с id = {}"),
