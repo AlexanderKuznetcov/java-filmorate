@@ -39,9 +39,9 @@ public class FilmDbStorage implements Storage<Film> {
     }
 
     public Film add(Film film) {
-        jdbcTemplate.execute("INSERT INTO films (name, description, release_date, duration, mpa_id) " +
-                "VALUES('" + film.getName() + "', '" + film.getDescription() + "', '" + film.getReleaseDate() + "', "
-                + film.getDuration() + ", " + film.getMpa().getId() + ")");
+        jdbcTemplate.update("INSERT INTO films (name, description, release_date, duration, mpa_id) " +
+                        "VALUES(?, ?, ?, ?, ?)", film.getName(), film.getDescription(),
+                film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
         Integer newId = null;
         SqlRowSet idR = jdbcTemplate.queryForRowSet("SELECT MAX(film_id) AS max_id FROM films");
         if (idR.next()) {
@@ -54,10 +54,10 @@ public class FilmDbStorage implements Storage<Film> {
                         genreId);
                 if (genreIdR.next()) {
                     SqlRowSet genreIdCheckR = jdbcTemplate.queryForRowSet("SELECT film_id FROM films_genres " +
-                                    "WHERE film_id=? AND genre_id=?", film.getId(), genreId);
+                            "WHERE film_id=? AND genre_id=?", film.getId(), genreId);
                     if (!genreIdCheckR.next()) {
-                        jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" +
-                                newId + ", " + genreId + ")");
+                        jdbcTemplate.update("INSERT INTO films_genres (film_id, genre_id) VALUES( ?, ?)",
+                                newId, genreId);
                     } else {
                         log.info("Обнаружен дубликат жанра у добавляемого фильма", genreId);
                     }
@@ -66,8 +66,7 @@ public class FilmDbStorage implements Storage<Film> {
                 }
             }
         }
-        jdbcTemplate.execute("INSERT INTO films_rate (film_id, rate) VALUES(" + newId + ", "
-                + film.getRate() + ")");
+        jdbcTemplate.update("INSERT INTO films_rate (film_id, rate) VALUES( ?, ?)", newId, film.getRate());
         System.out.println("фильм добавлен с id=" + newId);
         return this.getFromId(newId);
     }
@@ -77,7 +76,7 @@ public class FilmDbStorage implements Storage<Film> {
         if (rateR.next()) {
             int rate = rateR.getInt("rate");
             rate++;
-            jdbcTemplate.execute("UPDATE films_rate SET rate = " + rate + " WHERE film_id = " + filmId);
+            jdbcTemplate.update("UPDATE films_rate SET rate = ? WHERE film_id = ?", rate, filmId);
         }
     }
 
@@ -86,27 +85,27 @@ public class FilmDbStorage implements Storage<Film> {
         if (rateR.next() && rateR.getInt("rate") > 0) {
             int rate = rateR.getInt("rate");
             rate--;
-            jdbcTemplate.execute("UPDATE films_rate SET rate = " + rate + " WHERE film_id = " + filmId);
+            jdbcTemplate.update("UPDATE films_rate SET rate = ? WHERE film_id = ?", rate, filmId);
         }
     }
 
     public Film update(Film film) {
-        jdbcTemplate.execute("UPDATE films SET name = '" + film.getName() + "', description = '"
-                + film.getDescription() + "', release_date = '" + film.getReleaseDate() + "', duration = "
-                + film.getDuration() + ", mpa_id = " + film.getMpa().getId() + " WHERE film_id = " + film.getId());
-        jdbcTemplate.execute("UPDATE films_rate SET rate = " + film.getRate() + " WHERE film_id = " + film.getId());
-        jdbcTemplate.execute("DELETE FROM films_genres WHERE film_id = " + film.getId());
+        jdbcTemplate.update("UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?," +
+                " mpa_id = ? WHERE film_id = ?", film.getName(), film.getDescription(), film.getReleaseDate(),
+                film.getDuration(), film.getMpa().getId(), film.getId());
+        jdbcTemplate.update("UPDATE films_rate SET rate = ? WHERE film_id =?", film.getRate(), film.getId());
+        jdbcTemplate.update("DELETE FROM films_genres WHERE film_id = ?", film.getId());
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
                 int genreId = genre.getId();
-                SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM genres WHERE genre_id=?",
+                SqlRowSet genreIdR = jdbcTemplate.queryForRowSet("SELECT genre_id FROM genres WHERE genre_id = ?",
                         genreId);
                 if (genreIdR.next()) {
                     SqlRowSet genreIdCheckR = jdbcTemplate.queryForRowSet("SELECT film_id FROM films_genres " +
-                        "WHERE film_id=? AND genre_id=?", film.getId(), genreId);
+                        "WHERE film_id = ? AND genre_id = ?", film.getId(), genreId);
                     if (!genreIdCheckR.next()) {
-                        jdbcTemplate.execute("INSERT INTO films_genres (film_id, genre_id) VALUES(" +
-                                film.getId() + ", " + genreId + ")");
+                        jdbcTemplate.update("INSERT INTO films_genres (film_id, genre_id) VALUES( ?, ?)",
+                                film.getId(), genreId);
                     } else {
                         log.info("Обнаружен дубликат жанра у добавляемого фильма", genreId);
                     }
@@ -119,7 +118,7 @@ public class FilmDbStorage implements Storage<Film> {
     }
 
     public Film delete(Film film) {
-        jdbcTemplate.execute("DELETE FROM films WHERE film_id = " + film.getId());
+        jdbcTemplate.update("DELETE FROM films WHERE film_id = ?", film.getId());
         return film;
     }
 

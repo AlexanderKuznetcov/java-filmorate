@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -24,9 +23,8 @@ public class UserDbStorage implements Storage<User> {
     }
 
     public User add(User user) {
-        jdbcTemplate.execute("INSERT INTO users (email, login, name, birthday) " +
-                "VALUES('" + user.getEmail() + "', '" + user.getLogin() + "', '" + user.getName() + "', '"
-                + user.getBirthday() + "');");
+        jdbcTemplate.update("INSERT INTO users (email, login, name, birthday) " +
+                "VALUES( ?, ?, ?, ?)", user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
         SqlRowSet iR = jdbcTemplate.queryForRowSet("SELECT MAX(user_id) AS max_id FROM users");
         if (iR.next()) {
             return this.getFromId(iR.getInt("max_id"));
@@ -36,26 +34,24 @@ public class UserDbStorage implements Storage<User> {
     }
 
     public User update(User user) {
-        jdbcTemplate.execute("UPDATE users SET email='" + user.getEmail() + "', login='" + user.getLogin() +
-                "', name ='" + user.getName() + "', birthday='" + user.getBirthday() + "' WHERE user_id="
-                + user.getId());
+        jdbcTemplate.update("UPDATE users SET email=?, login=?, name =?, birthday=? WHERE user_id=?",
+                user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
         return this.getFromId(user.getId());
     }
 
     public User delete(User user) {
-        jdbcTemplate.execute("DELETE FROM users WHERE user_id=" + user.getId());
-        jdbcTemplate.execute("DELETE FROM friends WHERE user_id=" + user.getId());
-        jdbcTemplate.execute("DELETE FROM films_likes WHERE user_id=" + user.getId());
+        jdbcTemplate.update("DELETE FROM users WHERE user_id=?", user.getId());
+//        jdbcTemplate.execute("DELETE FROM friends WHERE user_id=" + user.getId());
+//        jdbcTemplate.execute("DELETE FROM films_likes WHERE user_id=" + user.getId());
         return user;
     }
 
     public void addFriend(int id, int idFriend) {
-        jdbcTemplate.execute("INSERT INTO friends (user_id, friend_id) " +
-                "VALUES(" + id + ", " + idFriend + ")");
+        jdbcTemplate.update("INSERT INTO friends (user_id, friend_id) VALUES( ?, ?)", id, idFriend);
     }
 
     public void deleteFriend(int id, int idNotFriend) {
-        jdbcTemplate.execute("DELETE FROM friends WHERE user_id=" + id + " AND friend_id=" + idNotFriend);
+        jdbcTemplate.update("DELETE FROM friends WHERE user_id=? AND friend_id=?", id, idNotFriend);
     }
 
     public List<User> getFriends(int id) {
