@@ -41,8 +41,6 @@ public class UserDbStorage implements Storage<User> {
 
     public User delete(User user) {
         jdbcTemplate.update("DELETE FROM users WHERE user_id=?", user.getId());
-//        jdbcTemplate.execute("DELETE FROM friends WHERE user_id=" + user.getId());
-//        jdbcTemplate.execute("DELETE FROM films_likes WHERE user_id=" + user.getId());
         return user;
     }
 

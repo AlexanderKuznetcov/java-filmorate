@@ -10,14 +10,14 @@ public class Film extends IdentifiableModelWithName {
     private LocalDate releaseDate;
     private int duration;
     private Mpa mpa;
-    private Set<Genre> genres;
+    private List<Genre> genres;
     private int rate;
 
     public Film() {
     }
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration,
-                Mpa mpa, Set<Genre> genres, int rate) {
+                Mpa mpa, List<Genre> genres, int rate) {
         this.id = id;
         this.name = name;
         this.description = description;
