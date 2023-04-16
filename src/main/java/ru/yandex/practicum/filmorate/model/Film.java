@@ -1,29 +1,30 @@
 package ru.yandex.practicum.filmorate.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Data
-public class Film extends IdentifiableModel{
-    private String name;
+public class Film extends IdentifiableModelWithName {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    @JsonIgnore
-    private Set<Integer> usersIdWhoLike = new TreeSet<>();
+    private Mpa mpa;
+    private List<Genre> genres;
+    private int rate;
 
-    public void addLike(int userId) {
-        usersIdWhoLike.add(userId);
+    public Film() {
     }
 
-    public void deleteLike(Integer userId) {
-        usersIdWhoLike.remove(userId);
-    }
-
-    public int getLikesCount() {
-        return usersIdWhoLike.size();
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration,
+                Mpa mpa, List<Genre> genres, int rate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.genres = genres;
+        this.rate = rate;
     }
 }

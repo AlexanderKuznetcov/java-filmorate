@@ -2,9 +2,13 @@ package ru.yandex.practicum.filmorate.message;
 
 public enum LogMessage {
     GET_FILMS("GET: Получен запрос на получение списка всех фильмов"),
-    GET_FILM ("GET: Получен запрос на получение фильма с id = {}"),
+    GET_MPAS("GET: Получен запрос на получение списка всех возрастных рейтингов"),
+    GET_GENRES("GET: Получен запрос на получение списка всех жанров"),
+    GET_FILM("GET: Получен запрос на получение фильма с id = {}"),
+    GET_MPA("GET: Получен запрос на получение возрастного рейтинга с id = {}"),
+    GET_GENRE("GET: Получен запрос на получение жанра с id = {}"),
     GET_USERS("GET: Получен запрос на получение списка всех пользователей"),
-    GET_USER ("GET: Получен запрос на получение пользователя с id = {}"),
+    GET_USER("GET: Получен запрос на получение пользователя с id = {}"),
     ADD_FILM("POST: Получен запрос на добавление нового фильма"),
     ADD_USER("POST: Получен запрос на добавление нового пользователя"),
     ADD_FILM_DONE("Фильм добавлен c id = {}"),
@@ -13,10 +17,15 @@ public enum LogMessage {
     UPDATE_USER("PUT: Получен запрос на обновление пользователя c id = {}"),
     UPDATE_FILM_DONE("Фильм с id= {} обновлен"),
     UPDATE_USER_DONE("Пользователь с id= {} обновлен"),
+    OBJ_NOT_FOUND("Объект не найден!"),
     FILM_NOT_FOUND("В списке отсутствует фильм с id = {}"),
     USER_NOT_FOUND("В списке отсутствует пользователь с id = {}"),
+    MPA_NOT_FOUND("В списке отсутствует возрастной рейтинг с id = {}"),
+    GENRE_NOT_FOUND("В списке отсутствует жанр с id = {}"),
     FILM_NOT_FOUND_EXC("В списке отсутствует фильм с id = "),
     USER_NOT_FOUND_EXC("В списке отсутствует пользователь с id = "),
+    MPA_NOT_FOUND_EXC("В списке отсутствует возрастной рейтинг с id = "),
+    GENRE_NOT_FOUND_EXC("В списке отсутствует жанр с id = "),
     VALIDATION_FAIL("Валидация не прошла!"),
     NOT_VALID_EMAIL("Электронная почта пустая или без @"),
     NOT_VALID_LOGIN("Логин пустой или содержит пробел"),
@@ -40,7 +49,7 @@ public enum LogMessage {
 
     private String logMassage;
 
-    LogMessage (String logMassage) {
+    LogMessage(String logMassage) {
         this.logMassage = logMassage;
     }
 
